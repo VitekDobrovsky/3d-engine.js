@@ -1,4 +1,5 @@
 import { Screen } from "./src/Screen.js"
+import { Square } from "./src/Element.js";
 
 function dirtyCode() {
   const WIDTH = 800;
@@ -153,5 +154,19 @@ function dirtyCode() {
 }
 
 // dirtyCode()
+
+// new code
 const screen = new Screen(canvas)
 
+const square = new Square(100, 100, 0, "#f08000", 200, 200)
+
+// const FPS = 60;
+// function mainLoopFrame() {
+//   screen.clear()
+//   square.draw(screen.ctx)
+//   square.x += 1
+//
+//   setTimeout(mainLoopFrame, 1000 / FPS);
+// }
+//
+// mainLoopFrame()
