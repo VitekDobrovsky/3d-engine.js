@@ -3,9 +3,9 @@ JavaScript polygon-based 3D engine build completely from scratch.
 
 ## TODO
 - [x] Dirty one-file sketch
-- [ ] OOP Sketch
-- [ ] OOP
-- [ ] Angles (maybe switch to triangles instead of polygons)
+- [x] OOP Sketch
+- [x] OOP
+- [ ] Angles
 - [ ] Camera movement
 
 
