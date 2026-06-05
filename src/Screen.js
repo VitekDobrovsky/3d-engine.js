@@ -12,23 +12,27 @@ export class Screen {
 
     this.polygons = []
   }
-    
-  worldToScreenCoords(x ,y, offsetX, offsetY) {
-    if (offsetX === undefined) offsetX = 0;
-    if (offsetY === undefined) offsetY = 0;
-
-    // -1,1 => 0,W/H
-    const x_ = ((x + 1) * this.width) / 2 - offsetX / 2;
-    const y_ = ((-y + 1) * this.height) / 2 - offsetY / 2;
-
-    return { x: x_, y: y_};
-  }
-
-  static project3Dto2D(x, y, z) {
+ 
+  static project3Dto2D(x, y, z, width, height) {
     const x_ = x / z;
     const y_ = y / z;
-    
-    return { x: x_, y: y_ };
+      
+    const width_ = width / z;
+    const height_ = height / z;
+
+    return { x: x_, y: y_, width: width_, height: height_ };
+  }
+
+  worldToScreenCoords(x ,y, width, height) {
+    // -1,1 => 0,W/H
+
+    const width_ = (width / 2) * this.width
+    const height_ = height / 2 * this.height
+
+    const x_ = ((x + 1) * this.width) / 2 - width_ / 2;
+    const y_ = ((-y + 1) * this.height) / 2 - height_ / 2;
+
+    return { x: x_, y: y_, width: width_, height: height_ };
   }
 
   clear() {
@@ -38,9 +42,9 @@ export class Screen {
 
   drawPolygons() {
     for (const p of this.polygons) {
-      const flatCoords = Screen.project3Dto2D(p.x, p.y, p.z)
-      const sCoords = this.worldToScreenCoords(flatCoords.x, flatCoords.y)
-      p.drawOnScreenCoord(this.ctx, sCoords.x, sCoords.y, p.width, p.height)
+      const flatCoords = Screen.project3Dto2D(p.x, p.y, p.z, p.width, p.height)
+      const sCoords = this.worldToScreenCoords(flatCoords.x, flatCoords.y, flatCoords.width, flatCoords.height)
+      p.drawOnScreenCoord(this.ctx, sCoords.x, sCoords.y, sCoords.width, sCoords.height)
     }
   }
 }
