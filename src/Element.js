@@ -15,8 +15,16 @@ export class Square extends Element {
   }
   
   draw(ctx) {
-    ctx.fillStyle = this.color
-    ctx.fillRect(this.x, this.y, this.width, this.height)
+    ctx.beginPath()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x + this.width, this.y)
+    ctx.lineTo(this.x + this.width, this.y + this.height)
+    ctx.lineTo(this.x, this.y + this.height)
+    ctx.closePath()
+
+    ctx.strokeStyle = this.color
+    ctx.lineWidth = 2;
+    ctx.stroke()
   }
 }
 
