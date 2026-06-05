@@ -8,18 +8,20 @@ export class Element {
 }
 
 export class Square extends Element {
-  constructor(x, y, z, color, width, height) {
+  constructor(x, y, z, color, width, height, screen) {
     super(x,y,z, color)
     this.width = width
     this.height = height
+  
+    screen.polygons.push(this)
   }
   
-  draw(ctx) {
+  drawOnScreenCoord(ctx, screenX, screenY, screenW, screenH) {
     ctx.beginPath()
-    ctx.moveTo(this.x, this.y)
-    ctx.lineTo(this.x + this.width, this.y)
-    ctx.lineTo(this.x + this.width, this.y + this.height)
-    ctx.lineTo(this.x, this.y + this.height)
+    ctx.moveTo(screenX, screenY)
+    ctx.lineTo(screenX + screenW, screenY)
+    ctx.lineTo(screenX + screenW, screenY + screenH)
+    ctx.lineTo(screenX, screenY + screenH)
     ctx.closePath()
 
     ctx.strokeStyle = this.color
