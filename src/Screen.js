@@ -47,4 +47,10 @@ export class Screen {
       p.drawOnScreenCoord(this.ctx, sCoords.x, sCoords.y, sCoords.width, sCoords.height)
     }
   }
+
+  startFrameLoop(fps, callback) {
+    callback()
+
+    setTimeout(() => this.startFrameLoop(fps, callback), 1000 / fps)
+  }
 }
