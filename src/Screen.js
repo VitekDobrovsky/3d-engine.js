@@ -9,23 +9,9 @@ export class Screen {
     canvas.height = height
 
     this.clear()
-
-    this.polygons = []
   }
  
-  static project3Dto2D(x, y, z, width, height) {
-    const x_ = x / z;
-    const y_ = y / z;
-      
-    const width_ = width / z;
-    const height_ = height / z;
-
-    return { x: x_, y: y_, width: width_, height: height_ };
-  }
-
   worldToScreenCoords(x ,y, width, height) {
-    // -1,1 => 0,W/H
-
     const width_ = (width / 2) * this.width
     const height_ = height / 2 * this.height
 
@@ -38,19 +24,5 @@ export class Screen {
   clear() {
     this.ctx.fillStyle = this.bgColor;
     this.ctx.fillRect(0, 0, this.width, this.height);
-  }
-
-  drawPolygons() {
-    for (const p of this.polygons) {
-      const flatCoords = Screen.project3Dto2D(p.x, p.y, p.z, p.width, p.height)
-      const sCoords = this.worldToScreenCoords(flatCoords.x, flatCoords.y, flatCoords.width, flatCoords.height)
-      p.drawOnScreenCoord(this.ctx, sCoords.x, sCoords.y, sCoords.width, sCoords.height)
-    }
-  }
-
-  startFrameLoop(fps, callback) {
-    callback()
-
-    setTimeout(() => this.startFrameLoop(fps, callback), 1000 / fps)
   }
 }
