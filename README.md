@@ -5,10 +5,10 @@ JavaScript polygon-based 3D engine build completely from scratch.
 - [x] Dirty one-file sketch
 - [x] OOP Sketch
 - [x] OOP
-- [ ] Matrices
-  - [ ] Create Matrix class
-  - [ ] Create Model Matrix
-  - [ ] 4D point instead of 3D
-  - [ ] Perspective projection matrix
-
-
+- [x] Matrices
+  - [x] Create Matrix class
+  - [x] Create Model Matrix
+  - [x] 4D point instead of 3D
+  - [x] Perspective projection matrix
+- [ ] Drawing architecture w/ animation loop
+- [ ] Fix rotating

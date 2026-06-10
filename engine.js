@@ -6,7 +6,7 @@ import { Matrix4 } from "./src/Matrix.js"
 const screen = new Screen(canvas)
 const camera = new Camera(0, 0, 0)
 const projectionMatrix = Matrix4.perspective(Math.PI / 2, 1, 0.1, 100)
-const element = new Element(0, 0, 1, "#008000")
+const element = new Element(1, 1, 1, "#008000")
 
 const mVp = new Matrix4().multiply(projectionMatrix).multiply(camera.viewMatrix).multiply(element.modelMatrix)
 const [cx, cy, cz, cw] = mVp.multiplyVec4([0, 0, 0, 1])
