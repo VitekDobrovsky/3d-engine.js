@@ -4,6 +4,7 @@ export class Element {
   constructor(x,y,z) {
     this.modelMatrix = Matrix4.translation(x, y, z);
     this.vertices = [];
+    this.showPoints = true;
   }
 
   translate(tx, ty, tz) {
@@ -29,6 +30,7 @@ export class PointElement extends Element {
 export class CubeElment extends Element {
   constructor(x, y, z, size) {
     super(x, y, z);
+    this.showPoints = false;
 
     const s = size / 2;
     this.vertices = [
@@ -41,5 +43,11 @@ export class CubeElment extends Element {
       [ s,  s,  s, 1],
       [-s,  s,  s, 1],
     ]
+
+    this.edges = [
+      [0,1],[1,2],[2,3],[3,0],
+      [4,5],[5,6],[6,7],[7,4],
+      [0,4],[1,5],[2,6],[3,7],
+    ];
   }
 }

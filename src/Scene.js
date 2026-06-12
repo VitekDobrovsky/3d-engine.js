@@ -14,18 +14,33 @@ export class Scene {
     for (const el of this.elements) {
       const mVp = new Matrix4().multiply(vp).multiply(el.modelMatrix);
   
-      for (const v of el.vertices) {
+      const projected = el.vertices.map(v => {
         const [cx, cy, _, cw] = mVp.multiplyVec4(v);
-        if (cw <= 0) continue; // behind camera
+        return { x: cx / cw, y: cy / cw, cw };
+      });
 
-        const sCoords = screen.worldToScreenCoords(cx / cw, cy / cw, 0.5 / cw, 0.5 / cw);
+      // points
+      if (el.showPoints) {
         screen.ctx.fillStyle = "#008000";
-        screen.ctx.fillRect(sCoords.x, sCoords.y, sCoords.width, sCoords.height);
+        for (const p of projected) {
+          if (p.cw <= 0) continue;
+          const s = screen.worldToScreenCoords(p.x, p.y, 0.5 / p.cw, 0.5 / p.cw);
+          screen.ctx.fillRect(s.x, s.y, s.width, s.height);
+        }
       }
 
-      // el.rotate("x", 0.01);
-      // el.rotate("y", 0.01);
-      // el.rotate("z", 0.01);
+      // edges
+      if (!el.edges) continue;
+      screen.ctx.strokeStyle = "#008000";
+      for (const [a, b] of el.edges) {
+        if (projected[a].cw <= 0 || projected[b].cw <= 0) continue;
+        const sa = screen.worldToScreenCoords(projected[a].x, projected[a].y, 0, 0);
+        const sb = screen.worldToScreenCoords(projected[b].x, projected[b].y, 0, 0);
+        screen.ctx.beginPath();
+        screen.ctx.moveTo(sa.x, sa.y);
+        screen.ctx.lineTo(sb.x, sb.y);
+        screen.ctx.stroke();
+      }
     }
   }
 
