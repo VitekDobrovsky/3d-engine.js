@@ -1,10 +1,10 @@
-import { Matrix4 } from "./Matrix.js"
+import { Matrix4 } from "./Matrix.js";
 
 export class Element {
   constructor(x, y, z, color) {
-    this.modelMatrix = Matrix4.translation(x, y, z)
+    this.modelMatrix = Matrix4.translation(x, y, z);
 
-    this.color = color
+    this.color = color;
   }
 
   translate(tx, ty, tz) {

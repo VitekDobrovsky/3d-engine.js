@@ -1,7 +1,7 @@
 export class Matrix4 {
-constructor() {
-    this.elements = new Float32Array(16);
-    this.identity();
+  constructor() {
+      this.elements = new Float32Array(16);
+      this.identity();
   }
 
   identity() {

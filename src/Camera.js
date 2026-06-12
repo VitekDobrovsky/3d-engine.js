@@ -1,4 +1,4 @@
-import { Matrix4 } from './Matrix.js';
+import { Matrix4 } from "./Matrix.js";
 
 export class Camera {
   constructor(x, y, z) {
