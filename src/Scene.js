@@ -11,17 +11,21 @@ export class Scene {
     screen.clear();
 
     const vp = new Matrix4().multiply(this.projectionMatrix).multiply(this.camera.viewMatrix);
-    for (const element of this.elements) {
-      const mVp = new Matrix4().multiply(vp).multiply(element.modelMatrix);
-      const [cx, cy, _, cw] = mVp.multiplyVec4([0, 0, 0, 1]);
+    for (const el of this.elements) {
+      const mVp = new Matrix4().multiply(vp).multiply(el.modelMatrix);
+  
+      for (const v of el.vertices) {
+        const [cx, cy, _, cw] = mVp.multiplyVec4(v);
+        if (cw <= 0) continue; // behind camera
 
-      const ndcX = cx / cw;
-      const ndcY = cy / cw;
+        const sCoords = screen.worldToScreenCoords(cx / cw, cy / cw, 0.5 / cw, 0.5 / cw);
+        screen.ctx.fillStyle = "#008000";
+        screen.ctx.fillRect(sCoords.x, sCoords.y, sCoords.width, sCoords.height);
+      }
 
-      const sCoords = screen.worldToScreenCoords(ndcX, ndcY, 0.5 / cw, 0.5 / cw);
-
-      screen.ctx.fillStyle = "#008000";
-      screen.ctx.fillRect(sCoords.x, sCoords.y, sCoords.width, sCoords.height);
+      // el.rotate("x", 0.01);
+      // el.rotate("y", 0.01);
+      // el.rotate("z", 0.01);
     }
   }
 
