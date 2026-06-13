@@ -20,18 +20,18 @@ export class Scene {
       });
 
       // points
-      if (el.showPoints) {
-        screen.ctx.fillStyle = "#008000";
+      if (!el.edges) {
+        screen.ctx.fillStyle = el.color;
         for (const p of projected) {
           if (p.cw <= 0) continue;
-          const s = screen.worldToScreenCoords(p.x, p.y, 0.5 / p.cw, 0.5 / p.cw);
+          const s = screen.worldToScreenCoords(p.x, p.y, 0.1 / p.cw, 0.1 / p.cw);
           screen.ctx.fillRect(s.x, s.y, s.width, s.height);
         }
       }
 
       // edges
       if (!el.edges) continue;
-      screen.ctx.strokeStyle = "#008000";
+      screen.ctx.strokeStyle =  el.color;
       for (const [a, b] of el.edges) {
         if (projected[a].cw <= 0 || projected[b].cw <= 0) continue;
         const sa = screen.worldToScreenCoords(projected[a].x, projected[a].y, 0, 0);

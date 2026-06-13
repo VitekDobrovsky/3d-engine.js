@@ -1,10 +1,10 @@
 import { Matrix4 } from "./Matrix.js";
 
 export class Element {
-  constructor(x,y,z) {
+  constructor(x,y,z,color="#008000") {
     this.modelMatrix = Matrix4.translation(x, y, z);
     this.vertices = [];
-    this.showPoints = true;
+    this.color = color;
   }
 
   translate(tx, ty, tz) {
@@ -28,9 +28,8 @@ export class PointElement extends Element {
 }
 
 export class CubeElement extends Element {
-  constructor(x, y, z, size) {
-    super(x, y, z);
-    this.showPoints = false;
+  constructor(x, y, z, size, color) {
+    super(x, y, z, color);
 
     const s = size / 2;
     this.vertices = [
