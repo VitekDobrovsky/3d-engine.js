@@ -27,7 +27,7 @@ export class PointElement extends Element {
   }
 }
 
-export class CubeElment extends Element {
+export class CubeElement extends Element {
   constructor(x, y, z, size) {
     super(x, y, z);
     this.showPoints = false;
