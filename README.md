@@ -1,132 +1,64 @@
-# JS 3D Engine • Hobby edition
+# JavaScript 3D Engine • from scratch
 
-JavaScript polygon-based 3D engine build completely from scratch.
+3D renderer built in vanilla JS with no libraries — just a 2D canvas and math.
 
-## TODO
+![Demo showcase](./media/demo-showcase.png)
 
-- [x] Dirty one-file sketch
-- [x] OOP Sketch
-- [x] OOP
-- [x] Matrices
-  - [x] Create Matrix class
-  - [x] Create Model Matrix
-  - [x] 4D point instead of 3D
-  - [x] Perspective projection matrix
-- [x] Drawing architecture w/ animation loop
-- [x] Fix rotating
-- [x] Edges
-- [x] Docs
-- [ ] Movement element loop
-- [ ] Dirty tag
+## Demo
+
+```bash
+npx serve .
+# or
+python3 -m http.server
+```
+
+Controls: `WASD` to move, `↑ ↓` to go up/down.
 
 ## The vertex pipeline
 
-4D point `(x, y, z, 1)` in its object's own local space to 2D pixel on the canvas:
+Each vertex starts as a 4D homogeneous point `(x, y, z, 1)` in local object space and ends up as a pixel on the canvas:
 
 ```
 local space  ──M──▶  world space  ──V──▶  camera space  ──P──▶  clip space  ──÷w──▶  NDC  ──viewport──▶  pixels
 ```
 
-1. **Multiply by M (the model matrix)** — moves the vertex from the object's own local coordinates into the world.
-2. **Multiply by V (the view matrix)** — repositions the world so the camera ends up at the origin. View matrix - *inverse* of the camera's own transform matrix.
-3. **Multiply by P (the perspective projection matrix)** — projects camera space into clip space. Loads `-z` into the `w` component. `(x, y, z)` get scaled by the field of view and aspect ratio. The new `w` holds the vertex's distance from the camera.
-4. **Divide `(x, y, z)` by `w`** — perspective foreshortening. Deeper vertices have a larger `w`. `(x, y, z) / w` - hyperbolic relation between distance and position towards middle of the screen.
-5. **Viewport mapping** (in `Screen.worldToScreenCoords`) — NDC `[-1, 1]` to pixel coordinates `[0, width]`. `x = ((x + 1) * screenWidth) / 2`, `y = ((-y + 1) * screenHeight) / 2`
+1. **Model matrix (M)** — moves the vertex from local coordinates into the world. Composed from translation × rotation matrices.
+2. **View matrix (V)** — the *inverse* of the camera's own transform. Shifts the whole world so the camera sits at the origin looking down `-Z`.
+3. **Projection matrix (P)** — projects camera space into clip space. Loads `-z` into the `w` component; scales `x` and `y` by field of view and aspect ratio.
+4. **Perspective divide (`÷w`)** — divides `(x, y, z)` by `w`. Deeper vertices have a larger `w`, so they compress toward the center — this is foreshortening. Vertices with `w ≤ 0` are behind the camera and are skipped.
+5. **Viewport mapping** — NDC `[-1, 1]` → pixel coordinates `[0, width]`: `x = ((x + 1) · W) / 2`, `y = ((-y + 1) · H) / 2`
 
-Vertices with `w ≤ 0` are behind the camera - skip them after step 3.
+Instead of multiplying each vertex by M, then V, then P separately, the three matrices are pre-multiplied into a single `P·V·M` matrix once per element per frame. Every vertex then costs exactly one matrix multiply.
 
-## Matrices used in the engine
+## Matrices
 
-Every matrix is 4×4. `c = cos(angle)`, `s = sin(angle)`.
+Every matrix is 4×4. `c = cos(θ)`, `s = sin(θ)`.
 
-#### Identity
+| Matrix | Purpose |
+|---|---|
+| **Translation** | Last column `(tx, ty, tz)` — homogeneous `w=1` makes non-linear translation work |
+| **Rotation X/Y/Z** | Standard axis-angle rotations; Y has a flipped sign pattern due to right-handed coords |
+| **Scale** | Diagonal `(sx, sy, sz)` |
+| **Perspective** | Only non-affine matrix — last row `[0 0 -1 0]` is what puts `-z` into `w` |
 
-The "do nothing" function. Every new `Matrix4` starts here.
-
-```
-[ 1  0  0  0 ]
-[ 0  1  0  0 ]
-[ 0  0  1  0 ]
-[ 0  0  0  1 ]
-```
-
-#### Translation — `Matrix4.translation(tx, ty, tz)`
-
-Identity with the translation tucked into the last column. The homogeneous `w=1` is what makes this work, since transition is not linear 
-```
-[ 1  0  0  tx ]
-[ 0  1  0  ty ]
-[ 0  0  1  tz ]
-[ 0  0  0   1 ]
-```
-
-#### Rotation X — `Matrix4.rotationX(angle)`
-
-X stays fixed. Y and Z rotate into each other.
+The perspective matrix in full, where `f = 1 / tan(fovY / 2)`:
 
 ```
-[ 1  0   0  0 ]
-[ 0  c  -s  0 ]
-[ 0  s   c  0 ]
-[ 0  0   0  1 ]
+[ f/aspect  0       0                     0                   ]
+[ 0         f       0                     0                   ]
+[ 0         0   (far+near)/(near-far)   (2·far·near)/(near-far) ]
+[ 0         0      -1                     0                   ]
 ```
 
-#### Rotation Y — `Matrix4.rotationY(angle)`
-
-Y fixed. X and Z swap. The sign pattern is flipped vs. X and Z because of right-handed coordinates.
+## Code structure
 
 ```
-[  c  0  s  0 ]
-[  0  1  0  0 ]
-[ -s  0  c  0 ]
-[  0  0  0  1 ]
+engine/
+  Matrix.js   — Matrix4 class: construction, multiplication, all transform types
+  Element.js  — Base Element, CubeElement, SquareElement
+  Camera.js   — View matrix, translate/rotate
+  Scene.js    — Holds elements + camera, runs the animation loop, projects + draws each frame
+  Screen.js   — Canvas setup, viewport mapping, clear
+demo.js       — Scene setup: cubes, ground plane, input handling
+index.html    — Entry point
 ```
-
-#### Rotation Z — `Matrix4.rotationZ(angle)`
-
-Z fixed. X and Y rotate. This is the classic 2D rotation embedded in the top-left.
-
-```
-[ c  -s  0  0 ]
-[ s   c  0  0 ]
-[ 0   0  1  0 ]
-[ 0   0  0  1 ]
-```
-
-#### Scale — `Matrix4.scale(sx, sy, sz)`
-
-Stretches each axis independently.
-
-```
-[ sx  0   0   0 ]
-[ 0   sy  0   0 ]
-[ 0   0   sz  0 ]
-[ 0   0   0   1 ]
-```
-
-#### Perspective — `Matrix4.perspective(fovY, aspect, near, far)`
-
-General form, where `f = 1 / tan(fovY/2)`:
-
-```
-[ f/aspect  0       0                       0                       ]
-[ 0         f       0                       0                       ]
-[ 0         0   (far+near)/(near-far)   (2·far·near)/(near-far)     ]
-[ 0         0      -1                       0                       ]
-```
-
-This is the only matrix in the engine that is **not affine** — its last row is `[0 0 -1 0]` instead of `[0 0 0 1]`. That's what enables the `w = -z` trick: after multiplication, the homogeneous coordinate holds the depth, and dividing x/y/z by it produces the foreshortening that real perspective requires.
-
-### Composed matrices (built every frame)
-
-#### Model matrix — `Element.modelMatrix`
-
-`T · Ry · Rz · Rx · ...`. The top-left 3×3 is the combined rotation, the last column is where the local origin lands in world space.
-
-#### View matrix — `Camera.viewMatrix`
-
-The _inverse_ of the camera's own transform — it shifts the whole world the opposite way so the camera ends up at the origin looking down `-Z`.
-
-#### Combined matrix — `P · V · M`
-
-Built once per element per frame in `Scene.draw`. Every vertex is multiplied by this single matrix instead of three. Regardless of how many transforms are composed, each vertex costs exactly 16 multiplies and 12 adds.
