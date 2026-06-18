@@ -1,6 +1,7 @@
 # JavaScript 3D Engine • from scratch
 
 A hobby project to understand the inner workings of 3D graphics.
+
 Built with no libraries — just a 2D canvas and math.
 
 ![Demo showcase](./media/demo-showcase.png)
