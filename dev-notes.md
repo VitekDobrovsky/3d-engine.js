@@ -35,6 +35,17 @@ Vertices with `w ≤ 0` are behind the camera - skip them after step 3.
 
 Every matrix is 4×4. `c = cos(angle)`, `s = sin(angle)`.
 
+### Overview
+
+| Matrix | Purpose |
+|---|---|
+| **Translation** | Last column `(tx, ty, tz)` — homogeneous `w=1` makes non-linear translation work |
+| **Rotation X/Y/Z** | Standard axis-angle rotations; Y has a flipped sign pattern due to right-handed coords |
+| **Scale** | Diagonal `(sx, sy, sz)` |
+| **Perspective** | Only non-affine matrix — last row `[0 0 -1 0]` is what puts `-z` into `w` |
+
+### Detailed descriptions
+
 #### Identity
 
 The "do nothing" function. Every new `Matrix4` starts here.
