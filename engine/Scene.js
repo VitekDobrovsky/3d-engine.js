@@ -7,12 +7,14 @@ export class Scene {
     this.projectionMatrix = Matrix4.perspective(Math.PI / 2, 1, 0.1, 100);
   }
 
-  draw(screen) {
+  draw(screen, onFrame, runForEl) {
     screen.clear();
+    onFrame?.(this);
 
     const vp = new Matrix4().multiply(this.projectionMatrix).multiply(this.camera.viewMatrix);
     for (const el of this.elements) {
       const mVp = new Matrix4().multiply(vp).multiply(el.modelMatrix);
+      runForEl?.(el);
   
       const projected = el.vertices.map(v => {
         const [cx, cy, _, cw] = mVp.multiplyVec4(v);
@@ -44,9 +46,9 @@ export class Scene {
     }
   }
 
-  startAnimationLoop(screen, fps) {
-    this.draw(screen);
+  startAnimationLoop(screen, fps, onFrame, runForEl, ) {
+    this.draw(screen, onFrame, runForEl);
     
-    setTimeout(() => this.startAnimationLoop(screen, fps), 1000 / fps);
+    setTimeout(() => this.startAnimationLoop(screen, fps, onFrame, runForEl), 1000 / fps);
   }
 }

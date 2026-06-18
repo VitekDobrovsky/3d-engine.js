@@ -28,7 +28,7 @@ export class PointElement extends Element {
 }
 
 export class CubeElement extends Element {
-  constructor(x, y, z, size, color) {
+  constructor(x, y, z, size, color, edges) {
     super(x, y, z, color);
 
     const s = size / 2;
@@ -43,7 +43,7 @@ export class CubeElement extends Element {
       [-s,  s,  s, 1],
     ]
 
-    this.edges = [
+    this.edges = edges ?? [
       [0,1],[1,2],[2,3],[3,0],
       [4,5],[5,6],[6,7],[7,4],
       [0,4],[1,5],[2,6],[3,7],
