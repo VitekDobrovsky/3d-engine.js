@@ -1,5 +1,7 @@
 # JavaScript 3D Engine • from scratch
 
+[Live demo](https://vitekdobrovsky.github.io/3d-engine.js/)
+
 A hobby project to understand the inner workings of 3D graphics.
 
 Built with no libraries — just a 2D canvas and math.
